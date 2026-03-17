@@ -10,11 +10,11 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024 * 1024
 
 # Folder where uploaded files will be saved
-UPLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "ReceivedFiles")
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "ReceivedFiles")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Folder for files you want to share/send to other devices
-SHARE_FOLDER = os.path.join(os.path.expanduser("~"), "SharedFiles")
+SHARE_FOLDER = os.path.join(os.getcwd(), "SharedFiles")
 os.makedirs(SHARE_FOLDER, exist_ok=True)
 
 HTML_TEMPLATE = '''
@@ -700,20 +700,29 @@ def get_local_ip():
 
 
 if __name__ == '__main__':
-    local_ip = get_local_ip()
-    port = 5000
+    # Get port from environment variable (for Render) or default to 5000 (for local)
+    port = int(os.environ.get('PORT', 5000))
 
-    print("\n" + "=" * 55)
-    print("   FILE TRANSFER SERVER RUNNING")
-    print("=" * 55)
-    print(f"\n   Open this URL from OTHER computers on your WiFi:")
-    print(f"\n   >>> http://{local_ip}:{port}")
-    print(f"\n   Uploaded files saved to:")
-    print(f"   {UPLOAD_FOLDER}")
-    print(f"\n   Files available for download from:")
-    print(f"   {SHARE_FOLDER}")
-    print(f"   (Put files here to share them!)")
-    print(f"\n   Press Ctrl+C to stop the server")
-    print("=" * 55 + "\n")
+    # Check if running on Render (or other cloud platform)
+    is_production = os.environ.get('RENDER') or os.environ.get('PORT')
+
+    if not is_production:
+        # Local development mode - show IP address
+        local_ip = get_local_ip()
+        print("\n" + "=" * 55)
+        print("   FILE TRANSFER SERVER RUNNING")
+        print("=" * 55)
+        print(f"\n   Open this URL from OTHER computers on your WiFi:")
+        print(f"\n   >>> http://{local_ip}:{port}")
+        print(f"\n   Uploaded files saved to:")
+        print(f"   {UPLOAD_FOLDER}")
+        print(f"\n   Files available for download from:")
+        print(f"   {SHARE_FOLDER}")
+        print(f"   (Put files here to share them!)")
+        print(f"\n   Press Ctrl+C to stop the server")
+        print("=" * 55 + "\n")
+    else:
+        # Production mode - simple startup
+        print(f"Starting File Transfer Server on port {port}...")
 
     app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
