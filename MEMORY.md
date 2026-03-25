@@ -167,6 +167,166 @@ c08d868 - Add download feature with folder browsing and ZIP support
 
 ---
 
-**Last Updated:** March 17, 2026
-**Status:** ✅ Successfully deployed and working
-**Next Session:** Test app thoroughly, consider adding password protection
+## Session Summary - March 26, 2026
+
+### What We Accomplished Today
+1. ✅ **Fixed bidirectional file transfer** - Unified ReceivedFiles and SharedFiles into single TransferFiles folder
+2. ✅ **Added comprehensive error handling** - Upload errors now show detailed messages for debugging
+3. ✅ **Added mobile-responsive design** - Fully optimized for phones and tablets
+4. ✅ **Tested live deployment** - Verified upload/download works on PythonAnywhere
+5. ✅ **Discovered file size limits** - ~100 MB limit on PythonAnywhere free tier
+6. ✅ **Portfolio demo preparation** - App is ready for showing to employers/clients
+
+### Key Problem Solved
+
+#### The Upload/Download Disconnect
+**Problem:** Files uploaded from one device didn't appear in download list on another device
+**Root Cause:** Uploads saved to `ReceivedFiles`, downloads read from `SharedFiles` (two different folders!)
+**Solution:** Created single `TransferFiles` folder used by both upload and download
+**Result:** True bidirectional transfer - Laptop 1 uploads → Laptop 2 sees it immediately in downloads!
+
+### Technical Changes Made
+
+#### Files Modified
+1. **file_server.py** (3 major updates):
+
+   **Update 1 - Error Handling:**
+   - Added try-catch block to upload endpoint
+   - Return detailed error messages with HTTP status codes
+   - Display actual errors in browser instead of generic "Upload failed"
+   - Added server-side error logging
+
+   **Update 2 - Bidirectional Transfer:**
+   - Created `TRANSFER_FOLDER = TransferFiles`
+   - Set both `UPLOAD_FOLDER` and `SHARE_FOLDER` to point to `TRANSFER_FOLDER`
+   - Updated UI messages to reflect unified approach
+   - Changed breadcrumb from "SharedFiles" to "All Files"
+   - Updated startup messages to explain bidirectional transfer
+
+   **Update 3 - Mobile Responsive:**
+   - Added viewport meta tag
+   - Added CSS media queries for tablets (768px) and phones (480px)
+   - Made download buttons full-width on mobile
+   - Adjusted padding, font sizes, and layouts for small screens
+   - ZIP download button stacks vertically on mobile
+
+2. **CLAUDE.md:**
+   - Updated tech stack to reflect TransferFiles folder
+   - Added mobile responsiveness to key features
+   - Added portfolio demo guide with script
+   - Documented file size limitations
+   - Updated roadmap with completed items
+
+3. **MEMORY.md:**
+   - Added this session summary
+
+### Testing Results
+
+#### What Works ✅
+- ✅ Upload small files (< 100 MB) from laptop → appears on PythonAnywhere
+- ✅ Download those files from phone → works perfectly
+- ✅ Mobile UI looks good on phone (responsive design working)
+- ✅ Folder browsing works
+- ✅ ZIP download works
+- ✅ Error messages display properly
+- ✅ Site loads instantly (no cold start delay when recently visited)
+
+#### File Size Limits Discovered
+- ✅ **Small files (images, docs):** Work perfectly
+- ⚠️ **Large files (6 GB video):** Fail on PythonAnywhere free tier
+- **Reason:** Request timeout and memory limits on free tier
+- **Solution:** Local network mode still supports up to 15 GB
+
+### User Context Updates
+
+#### Purpose Clarification
+**Initially thought:** User wanted to transfer files between 2 laptops on same network (USB-like speed)
+**Actually:** User wants this as a **portfolio project** to show employers/clients
+**Key Insight:** Internet accessibility is MORE important than large file support for portfolio demo
+
+#### Demo Requirements
+- Must work from anywhere (✅ PythonAnywhere deployment)
+- Must look professional on mobile (✅ responsive design added)
+- Must actually transfer files (✅ bidirectional transfer working)
+- Should handle small-to-medium files (✅ works up to ~100 MB)
+
+### Deployment Updates
+
+#### Git Commits Made Today
+```
+dc0d8df - Add mobile-responsive design for phones and tablets
+df57a38 - Enable true bidirectional file transfer with single shared folder
+e924c55 - Add better error handling for upload debugging
+```
+
+#### PythonAnywhere Updates
+- Pulled latest code 3 times (git pull in bash console)
+- Reloaded web app 3 times (green Reload button)
+- Tested upload/download functionality
+- Confirmed mobile responsiveness
+
+### Important Discoveries
+
+#### PythonAnywhere Free Tier Limitations
+1. **File size:** ~100 MB max per upload (timeout/memory limits)
+2. **Cold start:** 5-15 second delay if no visitors for long time
+3. **Storage:** 512 MB total
+4. **Monthly maintenance:** Must click "Run until 1 month from today" button
+
+#### Portfolio Demo Best Practices
+1. Open site 5-10 minutes before demo (avoid cold start)
+2. Use files < 100 MB for demo
+3. Test upload/download before showing someone
+4. Have phone charged for mobile demonstration
+5. Mention local network mode for large files
+
+### User Learning Today
+
+#### Concepts Explained
+1. **Bidirectional transfer:** Both devices can upload AND download
+2. **Unified folder architecture:** One folder for both operations
+3. **Mobile responsiveness:** CSS media queries adapt to screen size
+4. **File size limits:** Free hosting has constraints
+5. **Cold start:** Free tier apps "sleep" after inactivity
+6. **Portfolio presentation:** How to demo technical projects
+
+### Current Project Status (Updated)
+
+#### What's Working
+- ✅ Upload from any device (< 100 MB)
+- ✅ Download on any device
+- ✅ True bidirectional transfer
+- ✅ Mobile-responsive design
+- ✅ Comprehensive error handling
+- ✅ Folder browsing with breadcrumbs
+- ✅ ZIP downloads
+- ✅ Real-time progress bar
+- ✅ Drag & drop upload
+- ✅ Internet accessible (24/7)
+
+#### What's Not Working
+- ❌ Large files (> 100 MB) on PythonAnywhere (works locally)
+- ❌ Password protection (not yet added)
+- ❌ File deletion from UI (not yet added)
+- ❌ Chunked uploads (not yet added)
+
+### Next Session Ideas
+
+#### Potential Improvements
+1. **README.md for GitHub** - Professional documentation for portfolio
+2. **Landing page message** - Welcome text explaining the app
+3. **Delete button** - Allow users to remove uploaded files
+4. **Password protection** - Optional security layer
+5. **File preview** - View images/PDFs before downloading
+6. **Custom branding** - Add user's name/logo
+
+#### Questions for User
+1. Do you want a professional README for GitHub?
+2. Should we add password protection for demo security?
+3. Any specific features you want before showing to employers?
+
+---
+
+**Last Updated:** March 26, 2026
+**Status:** ✅ Portfolio-ready! Working bidirectional transfer + mobile responsive
+**Next Session:** Consider README, password protection, or file delete feature

@@ -9,8 +9,9 @@ A web-based file transfer tool built with Python/Flask. Supports **bidirectional
 - **Deployment:** PythonAnywhere (free tier)
 - **Production Server:** Gunicorn (for cloud deployment)
 - **No database** — files are saved directly to disk
-  - Local: Uploads saved to `~/ReceivedFiles`, files shared from `~/SharedFiles`
-  - Cloud: Uploads saved to `/home/usamanizamani/local-file-transfer/ReceivedFiles`
+  - **Single unified folder:** `TransferFiles` (used for both upload and download)
+  - Local: `E:\AI-300\file-transfer-application\TransferFiles`
+  - Cloud: `/home/usamanizamani/local-file-transfer/TransferFiles`
 
 ## Project Structure
 - `file_server.py` — Single-file application (Flask server + embedded HTML/CSS/JS template)
@@ -23,18 +24,25 @@ A web-based file transfer tool built with Python/Flask. Supports **bidirectional
 
 ## Key Design Decisions
 - Single-file architecture: entire app lives in `file_server.py` for simplicity and portability
+- **Unified folder approach:** Both upload and download use the same `TransferFiles` folder for true bidirectional transfer
+  - Laptop 1 uploads → files go to TransferFiles
+  - Laptop 2 downloads → reads from TransferFiles (sees Laptop 1's uploads immediately!)
 - Flask dev server is intentional — this is a LAN-only tool, not a production web app
 - Server binds to `0.0.0.0:5000` to be accessible from other devices on the network
 - Auto-detects local IP via UDP socket trick (`get_local_ip()`)
 - Tabbed UI: "Upload to Server" and "Download from Server" tabs
 - Download section uses `data-` attributes + event delegation (NOT inline onclick) to avoid Python/Jinja2 string escaping issues with backslashes
 - ZIP downloads use `tempfile` + `zipfile` to create on-the-fly archives
+- Mobile-first responsive design with breakpoints for tablets (768px) and phones (480px)
 
 ## Current Features
-- **Upload:** Drag & drop or browse files, multi-file support, real-time progress bar
+- **Upload:** Drag & drop or browse files, multi-file support, real-time progress bar, detailed error messages
 - **Download:** Browse shared folders with breadcrumb navigation, download individual files, download entire folders as ZIP
+- **Bidirectional Transfer:** Files uploaded from any device instantly appear in download list on all devices
 - **Folder browsing:** `/files?path=` API supports subfolder navigation with path traversal protection
 - **ZIP download:** `/download-zip?path=` zips any folder on-the-fly for one-click download
+- **Mobile Responsive:** Fully optimized for phones and tablets with touch-friendly interface
+- **Error Handling:** Comprehensive error messages for debugging upload/download issues
 
 ## Running Locally
 ```bash
@@ -51,10 +59,14 @@ Access at: `http://your-local-ip:5000`
 - Monthly maintenance: Login and click "Run until 1 month from today" button
 
 ## Known Limitations
+- **PythonAnywhere Free Tier:** Upload size limited to ~100 MB per file (request timeout/memory limits)
+  - Local network mode: Supports up to 15 GB (configured in code)
+  - Solution: Use local network mode for large files
 - No `secure_filename()` on uploaded files
 - No chunked upload — large files buffered in memory
-- No authentication — anyone on the network can upload/download
+- No authentication — anyone with URL can upload/download
 - ZIP creation for very large folders may be slow (done synchronously)
+- **Cold start:** First visitor after long inactivity may experience 5-15 second delay (PythonAnywhere free tier limitation)
 
 ## Development Roadmap
 
@@ -68,11 +80,17 @@ Access at: `http://your-local-ip:5000`
 - ~~Choose free hosting (PythonAnywhere vs Render)~~ ✅ DONE - Selected PythonAnywhere
 - ~~Configure for cloud deployment~~ ✅ DONE
 - ~~Live at: https://usamanizamani.pythonanywhere.com~~ ✅ DONE
+- ~~Fix upload errors with comprehensive error handling~~ ✅ DONE
+- ~~Enable true bidirectional transfer (unified folder)~~ ✅ DONE
+- ~~Add mobile-responsive design~~ ✅ DONE
 
 **Decision Log:**
 - Evaluated Render (requires credit card, potential billing risks)
 - Chose PythonAnywhere (no credit card, zero billing risk, beginner-friendly)
 - Successfully deployed with WSGI configuration
+- Tested upload/download from 2 devices (portfolio demo ready)
+- Discovered ~100 MB file size limit on PythonAnywhere free tier
+- Mobile optimization crucial for portfolio demonstrations
 
 ### Phase 3 — Security & Performance Improvements (PLANNED)
 - Add password protection (optional authentication)
@@ -86,8 +104,8 @@ Access at: `http://your-local-ip:5000`
 - Add delete button for uploaded files
 - Custom branding (logo, colors, user's name)
 - Dark mode toggle
-- Mobile-responsive improvements
-- File preview capabilities
+- File preview capabilities (images, PDFs, videos)
+- Upload progress for individual files in multi-file uploads
 
 ### Phase 5 (Optional) — Advanced Features
 - User accounts with individual storage
@@ -135,3 +153,49 @@ Access at: `http://your-local-ip:5000`
 - User is a beginner with no IT/AI background — keep explanations simple and step-by-step
 - Guide through decisions, explain the "why" behind changes
 - User prefers zero-risk solutions (chose PythonAnywhere over Render to avoid credit card requirement)
+
+## Portfolio Demo Guide
+
+### Use Case
+This project serves as a **portfolio piece** to demonstrate full-stack development skills:
+- Backend: Python/Flask API development
+- Frontend: Vanilla JavaScript, responsive CSS
+- Deployment: Cloud hosting configuration (PythonAnywhere/WSGI)
+- Real-world functionality: Actual file transfer between devices
+
+### Demo Script
+**1. Introduction:**
+> "I built a web-based file transfer tool with bidirectional upload/download capabilities. It's deployed live and accessible from anywhere."
+
+**2. Show the Live Site:**
+- Open: https://usamanizamani.pythonanywhere.com
+- Point out: Clean UI, mobile-responsive design
+
+**3. Demonstrate File Transfer:**
+- **Laptop 1:** Upload a photo/document (< 100 MB)
+- **Laptop 2 (or phone):** Show it appearing in download list
+- **Download it** to complete the round-trip transfer
+
+**4. Highlight Technical Features:**
+- "Uses Flask backend with RESTful API"
+- "Single-file architecture for simplicity"
+- "Deployed on PythonAnywhere with WSGI configuration"
+- "Mobile-responsive design with CSS media queries"
+- "Real-time upload progress with XMLHttpRequest"
+
+**5. Discuss Trade-offs:**
+- "Free tier has ~100 MB upload limit"
+- "For larger files, I designed a local network mode using WiFi speeds (like USB transfer)"
+- "Shows understanding of deployment constraints and optimization strategies"
+
+### File Size Recommendations for Demo
+- ✅ **Best:** Images (1-10 MB), Documents (< 5 MB), Small videos (< 50 MB)
+- ⚠️ **Risky:** Large videos (> 100 MB) may timeout on PythonAnywhere
+- 💡 **Alternative:** For large file demo, run locally and show WiFi-speed transfer
+
+### Pre-Demo Checklist
+- [ ] Open site 5-10 minutes before demo (wake up from cold start)
+- [ ] Test upload/download to ensure it's working
+- [ ] Have demo files ready (< 100 MB each)
+- [ ] Charge phone for mobile demonstration
+- [ ] Prepare GitHub repo link: https://github.com/UsamaBarkat/local-file-transfer
