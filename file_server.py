@@ -526,7 +526,16 @@ HTML_TEMPLATE = '''
                     fileInput.value = '';
                     fileList.innerHTML = '';
                 } else {
-                    showStatus('Upload failed. Please try again.', 'error');
+                    var errorMsg = 'Upload failed. ';
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.error) {
+                            errorMsg += 'Error: ' + response.error;
+                        }
+                    } catch(e) {
+                        errorMsg += 'Please try again.';
+                    }
+                    showStatus(errorMsg, 'error');
                 }
                 resetProgress();
             });
@@ -566,23 +575,30 @@ HTML_TEMPLATE = '''
 @app.route('/', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
-        files = request.files.getlist('files')
-        count = 0
-        for file in files:
-            if file.filename:
-                # Preserve folder structure
-                filename = file.filename.replace('\\', '/')
-                # Remove any leading slashes
-                filename = filename.lstrip('/')
-                save_path = os.path.join(UPLOAD_FOLDER, filename)
-                # Create directory if needed
-                dir_path = os.path.dirname(save_path)
-                if dir_path:
-                    os.makedirs(dir_path, exist_ok=True)
-                file.save(save_path)
-                count += 1
-                print(f"   Received: {filename}")
-        return jsonify({'success': True, 'count': count})
+        try:
+            files = request.files.getlist('files')
+            if not files:
+                return jsonify({'success': False, 'error': 'No files received'}), 400
+
+            count = 0
+            for file in files:
+                if file.filename:
+                    # Preserve folder structure
+                    filename = file.filename.replace('\\', '/')
+                    # Remove any leading slashes
+                    filename = filename.lstrip('/')
+                    save_path = os.path.join(UPLOAD_FOLDER, filename)
+                    # Create directory if needed
+                    dir_path = os.path.dirname(save_path)
+                    if dir_path:
+                        os.makedirs(dir_path, exist_ok=True)
+                    file.save(save_path)
+                    count += 1
+                    print(f"   Received: {filename}")
+            return jsonify({'success': True, 'count': count}), 200
+        except Exception as e:
+            print(f"   ERROR during upload: {str(e)}")
+            return jsonify({'success': False, 'error': str(e)}), 500
 
     return render_template_string(HTML_TEMPLATE, upload_path=UPLOAD_FOLDER, share_path=SHARE_FOLDER)
 
