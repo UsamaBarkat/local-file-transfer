@@ -9,13 +9,13 @@ app = Flask(__name__)
 # Increase max file size (15 GB)
 app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024 * 1024
 
-# Folder where uploaded files will be saved
-UPLOAD_FOLDER = os.path.join(os.getcwd(), "ReceivedFiles")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Single folder for bidirectional file transfer (upload and download)
+TRANSFER_FOLDER = os.path.join(os.getcwd(), "TransferFiles")
+os.makedirs(TRANSFER_FOLDER, exist_ok=True)
 
-# Folder for files you want to share/send to other devices
-SHARE_FOLDER = os.path.join(os.getcwd(), "SharedFiles")
-os.makedirs(SHARE_FOLDER, exist_ok=True)
+# Use the same folder for both upload and download
+UPLOAD_FOLDER = TRANSFER_FOLDER
+SHARE_FOLDER = TRANSFER_FOLDER
 
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
@@ -293,13 +293,14 @@ HTML_TEMPLATE = '''
             </form>
 
             <div class="path-info">
-                <strong>Files are saved to:</strong> {{ upload_path }}
+                <strong>Uploaded files will be available for download on all connected devices.</strong><br>
+                Storage location: {{ upload_path }}
             </div>
         </div>
 
         <!-- DOWNLOAD TAB -->
         <div id="tab-download" class="tab-content">
-            <p style="color:#666; margin-bottom:15px;">Files shared by the server computer. Click folders to browse, click "Download" to save files.</p>
+            <p style="color:#666; margin-bottom:15px;">Files available for download (including files uploaded from other devices). Click folders to browse, click "Download" to save files.</p>
             <button class="refresh-btn" onclick="loadFiles(currentPath)">Refresh</button>
             <a id="zipBtn" class="btn" style="display:inline-block; width:auto; padding:12px 30px; font-size:15px; margin-bottom:15px; margin-left:10px; text-decoration:none;" href="/download-zip">Download All as ZIP</a>
             <div id="breadcrumb" class="breadcrumb"></div>
@@ -307,7 +308,7 @@ HTML_TEMPLATE = '''
                 <div class="empty-message">Loading files...</div>
             </div>
             <div class="path-info">
-                <strong>Shared from:</strong> {{ share_path }}
+                <strong>Files stored in:</strong> {{ share_path }}
             </div>
         </div>
     </div>
@@ -353,7 +354,7 @@ HTML_TEMPLATE = '''
                 .then(function(data) {
                     if (data.items.length === 0) {
                         downloadList.innerHTML = '<div class="empty-message">' +
-                            (currentPath ? 'This folder is empty.' : 'No files shared yet.<br><br>Place files or folders in the SharedFiles folder on the server computer.') +
+                            (currentPath ? 'This folder is empty.' : 'No files available yet.<br><br>Upload files using the "Upload to Server" tab, and they will appear here.') +
                             '</div>';
                         return;
                     }
@@ -400,10 +401,10 @@ HTML_TEMPLATE = '''
         function updateBreadcrumb() {
             var bc = document.getElementById('breadcrumb');
             if (!currentPath) {
-                bc.innerHTML = '<strong>SharedFiles</strong>';
+                bc.innerHTML = '<strong>All Files</strong>';
                 return;
             }
-            var html = '<a class="bc-link" data-path="">SharedFiles</a>';
+            var html = '<a class="bc-link" data-path="">All Files</a>';
             var parts = currentPath.split('/');
             var builtPath = '';
             for (var i = 0; i < parts.length; i++) {
@@ -730,11 +731,12 @@ if __name__ == '__main__':
         print("=" * 55)
         print(f"\n   Open this URL from OTHER computers on your WiFi:")
         print(f"\n   >>> http://{local_ip}:{port}")
-        print(f"\n   Uploaded files saved to:")
-        print(f"   {UPLOAD_FOLDER}")
-        print(f"\n   Files available for download from:")
-        print(f"   {SHARE_FOLDER}")
-        print(f"   (Put files here to share them!)")
+        print(f"\n   All files (uploaded & shared) stored in:")
+        print(f"   {TRANSFER_FOLDER}")
+        print(f"\n   How it works:")
+        print(f"   • Upload files from any device")
+        print(f"   • Download them on any other device")
+        print(f"   • All devices see the same files!")
         print(f"\n   Press Ctrl+C to stop the server")
         print("=" * 55 + "\n")
     else:
