@@ -21,6 +21,8 @@ HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Transfer</title>
     <style>
         * { box-sizing: border-box; }
@@ -255,6 +257,114 @@ HTML_TEMPLATE = '''
         }
         .breadcrumb a:hover { text-decoration: underline; }
         .breadcrumb span { color: #999; }
+
+        /* Mobile Responsive Styles */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 15px 10px;
+            }
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+            h1 {
+                font-size: 22px;
+                margin-bottom: 8px;
+            }
+            .subtitle {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+            .tabs {
+                margin-bottom: 20px;
+            }
+            .tab {
+                padding: 10px 15px;
+                font-size: 14px;
+                flex: 1;
+                text-align: center;
+            }
+            .upload-area {
+                padding: 30px 15px;
+                margin: 15px 0;
+            }
+            .upload-area .icon {
+                font-size: 36px;
+                margin-bottom: 10px;
+            }
+            .upload-area h3 {
+                font-size: 16px;
+            }
+            .upload-area p {
+                font-size: 14px;
+            }
+            .btn {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+            .download-item {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 12px;
+            }
+            .download-btn {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+                text-align: center;
+                padding: 10px;
+            }
+            .path-info {
+                font-size: 12px;
+                padding: 12px;
+                margin-top: 20px;
+            }
+            .file-item {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+            .breadcrumb {
+                font-size: 12px;
+                flex-wrap: wrap;
+            }
+            .refresh-btn {
+                padding: 8px 20px;
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+            #zipBtn {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+                margin-bottom: 10px !important;
+                margin-left: 0 !important;
+                display: block !important;
+                width: 100% !important;
+                text-align: center !important;
+            }
+            .download-item-name {
+                font-size: 14px;
+            }
+            .download-item-size {
+                font-size: 12px;
+            }
+            .empty-message {
+                font-size: 14px;
+                padding: 30px 15px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+            }
+            .tab {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+            .upload-area {
+                padding: 25px 10px;
+            }
+        }
     </style>
 </head>
 <body>
